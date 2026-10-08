@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cantina da Honestidade</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 font-sans min-h-screen relative">
+
+    <!-- Header -->
+    <header class="bg-emerald-600 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold tracking-tight">Canjitech</h1>
+            <div class="flex items-center gap-4">
+                <!-- Badge de Saldo com Botão de Adicionar -->
+                <div class="flex items-center bg-emerald-800 rounded-full shadow-inner p-1 pl-3">
+                    <span id="user-balance" class="text-sm text-white font-medium mr-2" data-balance="25.00">
+                        Saldo: R$ 25,00
+                    </span>
+                    <button type="button" class="bg-emerald-500 hover:bg-emerald-400 text-white w-7 h-7 rounded-full flex items-center justify-center transition-colors shadow-sm" title="Adicionar Saldo">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </button>
+                </div>
+                <!-- Avatar do Usuário -->
+                <div class="w-10 h-10 bg-white text-emerald-600 rounded-full flex items-center justify-center font-bold shadow-sm">
+                    MP
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navegação (Design em Pills para suportar os ícones brancos) -->
+    <nav class="bg-white shadow-sm mb-8">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex gap-3">
+            <button type="button" data-target="pdv" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 text-white font-medium transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+                Catálogo
+            </button>
+            <button type="button" data-target="usuarios" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg bg-transparent text-slate-500 hover:bg-slate-100 font-medium transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                Usuários
+            </button>
+            <button type="button" data-target="produtos" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg bg-transparent text-slate-500 hover:bg-slate-100 font-medium transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Gestão de Produtos
+            </button>
+        </div>
+    </nav>
+
+    <!-- Container Principal -->
+    <main class="max-w-7xl mx-auto px-4 pb-12">
+
+        <!-- ABA: PDV (Catálogo + Carrinho) -->
+        <div id="pdv" class="tab-content block">
+            <div class="flex flex-col lg:flex-row gap-6">
+                
+                <!-- Coluna Esquerda: Catálogo (Ocupa a maior parte) -->
+                <div class="flex-1">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-bold text-slate-800">Catálogo de Produtos</h2>
+                        <p class="text-slate-500 text-sm">Selecione os itens para adicionar ao carrinho.</p>
+                    </div>
+
+                    <!-- Grid de 10 Produtos (5 colunas no desktop) -->
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                       
+                       <!-- 1 -->
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center text-center hover:border-emerald-200 transition-colors">
+                            <div class="w-16 h-16 bg-slate-50 rounded-full mb-3 flex items-center justify-center text-3xl">🧁</div>
+                            <h3 class="font-semibold text-slate-800 text-sm mb-1">Brigadeiro</h3>
+                            <p class="text-emerald-600 font-bold mb-3 text-sm">R$ 2,50</p>
+                            <button type="button" class="btn-add w-full bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white font-semibold py-2 rounded-full text-xs transition-all flex items-center justify-center gap-1" data-price="2.50" data-name="Brigadeiro">
+                                + Adicionar
+                            </button>
+                        </div>
+                        <!-- 2 -->
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center text-center hover:border-emerald-200 transition-colors">
+                            <div class="w-16 h-16 bg-slate-50 rounded-full mb-3 flex items-center justify-center text-3xl">🍫</div>
+                            <h3 class="font-semibold text-slate-800 text-sm mb-1">Barra de Cereal</h3>
+                            <p class="text-emerald-600 font-bold mb-3 text-sm">R$ 3,00</p>
+                            <button type="button" class="btn-add w-full bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white font-semibold py-2 rounded-full text-xs transition-all flex items-center justify-center gap-1" data-price="3.00" data-name="Barra de Cereal">
+                                + Adicionar
+                            </button>
+                        </div>
+                        <!-- 3 -->
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center text-center hover:border-emerald-200 transition-colors">
+                            <div class="w-16 h-16 bg-slate-50 rounded-full mb-3 flex items-center justify-center text-3xl">💧</div>
+                            <h3 class="font-semibold text-slate-800 text-sm mb-1">Água Mineral</h3>
+                            <p class="text-emerald-600 font-bold mb-3 text-sm">R$ 2,00</p>
+                            <button type="button" class="btn-add w-full bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white font-semibold py-2 rounded-full text-xs transition-all flex items-center justify-center gap-1" data-price="2.00" data-name="Água Mineral">
+                                + Adicionar
+                            </button>
+                        </div>
+                        <!-- 4 -->
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center text-center hover:border-emerald-200 transition-colors">
+                            <div class="w-16 h-16 bg-slate-50 rounded-full mb-3 flex items-center justify-center text-3xl">🥤</div>
+                            <h3 class="font-semibold text-slate-800 text-sm mb-1">Refrigerante</h3>
+                            <p class="text-emerald-600 font-bold mb-3 text-sm">R$ 5,00</p>
+                            <button type="button" class="btn-add w-full bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white font-semibold py-2 rounded-full text-xs transition-all flex items-center justify-center gap-1" data-price="5.00" data-name="Refrigerante">
+                                + Adicionar
+                            </button>
+                        </div>
+                        <!-- 5 -->
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center text-center hover:border-emerald-200 transition-colors">
+                            <div class="w-16 h-16 bg-slate-50 rounded-full mb-3 flex items-center justify-center text-3xl">🥟</div>
+                            <h3 class="font-semibold text-slate-800 text-sm mb-1">Salgado Assado</h3>
+                            <p class="text-emerald-600 font-bold mb-3 text-sm">R$ 6,00</p>
+                            <button type="button" class="btn-add w-full bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white font-semibold py-2 rounded-full text-xs transition-all flex items-center justify-center gap-1" data-price="6.00" data-name="Salgado Assado">
+                                + Adicionar
+                            </button>
+                        </div>
+                        <!-- 6 -->
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center text-center hover:border-emerald-200 transition-colors">
+                            <div class="w-16 h-16 bg-slate-50 rounded-full mb-3 flex items-center justify-center text-3xl">🍪</div>
+                            <h3 class="font-semibold text-slate-800 text-sm mb-1">Biscoito Recheado</h3>
+                            <p class="text-emerald-600 font-bold mb-3 text-sm">R$ 3,50</p>
+                            <button type="button" class="btn-add w-full bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white font-semibold py-2 rounded-full text-xs transition-all flex items-center justify-center gap-1" data-price="3.50" data-name="Biscoito Recheado">
+                                + Adicionar
+                            </button>
+                        </div>
+                        <!-- 7 -->
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center text-center hover:border-emerald-200 transition-colors">
+                            <div class="w-16 h-16 bg-slate-50 rounded-full mb-3 flex items-center justify-center text-3xl">🧃</div>
+                            <h3 class="font-semibold text-slate-800 text-sm mb-1">Suco Natural</h3>
+                            <p class="text-emerald-600 font-bold mb-3 text-sm">R$ 4,50</p>
+                            <button type="button" class="btn-add w-full bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white font-semibold py-2 rounded-full text-xs transition-all flex items-center justify-center gap-1" data-price="4.50" data-name="Suco Natural">
+                                + Adicionar
+                            </button>
+                        </div>
+                        <!-- 8 -->
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center text-center hover:border-emerald-200 transition-colors">
+                            <div class="w-16 h-16 bg-slate-50 rounded-full mb-3 flex items-center justify-center text-3xl">🧀</div>
+                            <h3 class="font-semibold text-slate-800 text-sm mb-1">Pão de Queijo</h3>
+                            <p class="text-emerald-600 font-bold mb-3 text-sm">R$ 2,50</p>
+                            <button type="button" class="btn-add w-full bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white font-semibold py-2 rounded-full text-xs transition-all flex items-center justify-center gap-1" data-price="2.50" data-name="Pão de Queijo">
+                                + Adicionar
+                            </button>
+                        </div>
+                        <!-- 9 -->
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center text-center hover:border-emerald-200 transition-colors">
+                            <div class="w-16 h-16 bg-slate-50 rounded-full mb-3 flex items-center justify-center text-3xl">🍰</div>
+                            <h3 class="font-semibold text-slate-800 text-sm mb-1">Bolo de Pote</h3>
+                            <p class="text-emerald-600 font-bold mb-3 text-sm">R$ 7,00</p>
+                            <button type="button" class="btn-add w-full bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white font-semibold py-2 rounded-full text-xs transition-all flex items-center justify-center gap-1" data-price="7.00" data-name="Bolo de Pote">
+                                + Adicionar
+                            </button>
+                        </div>
+                        <!-- 10 -->
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col items-center text-center hover:border-emerald-200 transition-colors">
+                            <div class="w-16 h-16 bg-slate-50 rounded-full mb-3 flex items-center justify-center text-3xl">⚡</div>
+                            <h3 class="font-semibold text-slate-800 text-sm mb-1">Energético</h3>
+                            <p class="text-emerald-600 font-bold mb-3 text-sm">R$ 8,00</p>
+                            <button type="button" class="btn-add w-full bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white font-semibold py-2 rounded-full text-xs transition-all flex items-center justify-center gap-1" data-price="8.00" data-name="Energético">
+                                + Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coluna Direita: Carrinho de Compras -->
+                <div class="w-full lg:w-80 flex-shrink-0">
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 h-full flex flex-col overflow-hidden sticky top-4">
+                        <div class="bg-slate-50 p-4 border-b border-slate-200 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            <h2 class="font-bold text-slate-800">Seu Carrinho</h2>
+                        </div>
+                        
+                        <!-- Lista de Itens do Carrinho -->
+                        <div id="cart-items" class="p-4 flex-1 overflow-y-auto bg-white min-h-[200px]">
+                            <p class="text-slate-400 text-sm text-center mt-10">O carrinho está vazio.</p>
+                        </div>
+
+                        
+                        <!-- Resumo e Botões de Ação -->
+                        <div class="p-4 bg-slate-50 border-t border-slate-200">
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="text-slate-600 font-medium">Total:</span>
+                                <span id="cart-total" class="text-xl font-bold text-slate-800">R$ 0,00</span>
+                            </div>
+                            <div class="space-y-2">
+                                <button id="btn-checkout" disabled class="w-full bg-emerald-600 disabled:bg-slate-300 disabled:cursor-not-allowed hover:bg-emerald-700 text-white font-bold py-3 rounded-lg transition-colors">
+                                    Finalizar Compra
+                                </button>
+                                <button id="btn-clear-cart" disabled class="w-full bg-transparent disabled:text-slate-400 disabled:cursor-not-allowed text-slate-500 hover:text-red-600 hover:bg-red-50 font-medium py-2 rounded-lg transition-colors text-sm">
+                                    Limpar Carrinho
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA: USUÁRIOS -->
+        <div id="usuarios" class="tab-content hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-slate-800">Gerenciar Usuários</h2>
+                <button type="button" onclick="openModal('modal-usuario')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">+ Novo Usuário</button>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 text-sm uppercase">
+                            <th class="p-4 font-medium">Nome</th>
+                            <th class="p-4 font-medium">Matrícula</th>
+                            <th class="p-4 font-medium">Status</th>
+                            <th class="p-4 font-medium text-right">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-slate-700">
+                        <tr>
+                            <td class="p-4 font-medium">Marcos</td>
+                            <td class="p-4 text-sm">2024001</td>
+                            <td class="p-4">
+                                <!-- Adicionado 'inline-block', 'w-24' e 'text-center' para travar a largura -->
+                                <span class="status-badge inline-block w-24 text-center bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-semibold transition-colors">Ativo</span>
+                            </td>
+                            <td class="p-4 text-right">
+                                <!-- Botão Toggle (Switch) com a lógica acoplada para alterar a badge -->
+                                <button type="button" 
+                                    onclick="
+                                        const isAtivo = this.classList.contains('bg-emerald-500');
+                                        const badge = this.closest('tr').querySelector('.status-badge');
+                                        
+                                        // Alterna o visual do botão
+                                        this.classList.replace(isAtivo ? 'bg-emerald-500' : 'bg-red-500', isAtivo ? 'bg-red-500' : 'bg-emerald-500');
+                                        this.children[0].classList.toggle('translate-x-5');
+                                        this.children[0].classList.toggle('translate-x-1');
+                                        
+                                        // Alterna o visual e o texto da badge
+                                        if (isAtivo) {
+                                            badge.classList.replace('bg-green-100', 'bg-red-100');
+                                            badge.classList.replace('text-green-700', 'text-red-700');
+                                            badge.innerText = 'Desativado';
+                                        } else {
+                                            badge.classList.replace('bg-red-100', 'bg-green-100');
+                                            badge.classList.replace('text-red-700', 'text-green-700');
+                                            badge.innerText = 'Ativo';
+                                        }
+                                    " 
+                                    class="relative inline-flex h-6 w-10 items-center rounded-full bg-emerald-500 transition-colors focus:outline-none" 
+                                    title="Ativar/Desativar">
+                                    <span class="inline-block h-4 w-4 translate-x-5 transform rounded-full bg-white transition-transform"></span>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ABA: PRODUTOS -->
+        <div id="produtos" class="tab-content hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-slate-800">Gerenciar Produtos</h2>
+                <button type="button" onclick="openModal('modal-produto')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">+ Novo Produto</button>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 text-sm uppercase">
+                            <th class="p-4 font-medium">Produto</th>
+                            <th class="p-4 font-medium">Preço (R$)</th>
+                            <th class="p-4 font-medium text-right">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-slate-700">
+                        <tr>
+                            <td class="p-4 font-medium">Café Expresso</td>
+                            <td class="p-4 text-sm">R$ 2,50</td>
+                            <td class="p-4 text-right">
+                                <button type="button" class="text-slate-400 hover:text-emerald-600 text-sm font-medium mr-3">Editar</button>
+                                <button type="button" class="text-slate-400 hover:text-red-500 text-sm font-medium">Excluir</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Overlay/Fundo Escuro para Modais -->
+    <div id="modal-backdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden z-40 transition-opacity"></div>
+
+    <!-- MODAL: Novo Usuário -->
+    <div id="modal-usuario" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-xl shadow-xl z-50 hidden">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-lg font-bold text-slate-800">Cadastrar Novo Usuário</h3>
+                <button onclick="closeModal('modal-usuario')" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">&times;</button>
+            </div>
+            <form id="form-usuario" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Nome Completo</label>
+                    <input type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Ex: João Silva">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Matrícula / ID</label>
+                    <input type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Ex: 2024002">
+                </div>
+                <div class="pt-4 flex justify-end gap-3">
+                    <button type="button" onclick="closeModal('modal-usuario')" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition-colors">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors">Salvar Usuário</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Novo Produto -->
+    <div id="modal-produto" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-xl shadow-xl z-50 hidden">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-lg font-bold text-slate-800">Cadastrar Novo Produto</h3>
+                <button onclick="closeModal('modal-produto')" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">&times;</button>
+            </div>
+            <form id="form-produto" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Nome do Produto</label>
+                    <input type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Ex: Refrigerante Lata">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Preço (R$)</label>
+                    <input type="number" step="0.01" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="0.00">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Emoji / Ícone</label>
+                    <input type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Ex: 🥤">
+                </div>
+                <div class="pt-4 flex justify-end gap-3">
+                    <button type="button" onclick="closeModal('modal-produto')" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition-colors">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors">Salvar Produto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Funções de Controle de Modais
+        function openModal(modalId) {
+            document.getElementById('modal-backdrop').classList.remove('hidden');
+            document.getElementById(modalId).classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById('modal-backdrop').classList.add('hidden');
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- 1. Lógica de Navegação das Abas ---
+            const tabs = document.querySelectorAll('.tab-content');
+            const tabBtns = document.querySelectorAll('.tab-btn');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const targetId = e.currentTarget.getAttribute('data-target');
+
+                    // Esconde todas as abas
+                    tabs.forEach(tab => {
+                        tab.classList.remove('block');
+                        tab.classList.add('hidden');
+                    });
+
+                    // Reseta os estilos de todos os botões (estado inativo)
+                    tabBtns.forEach(b => {
+                        b.classList.remove('bg-emerald-600', 'text-white');
+                        b.classList.add('bg-transparent', 'text-slate-500', 'hover:bg-slate-100');
+                    });
+
+                    // Exibe a aba clicada
+                    document.getElementById(targetId).classList.remove('hidden');
+                    document.getElementById(targetId).classList.add('block');
+
+                    // Aplica estilo ativo no botão clicado
+                    e.currentTarget.classList.remove('bg-transparent', 'text-slate-500', 'hover:bg-slate-100');
+                    e.currentTarget.classList.add('bg-emerald-600', 'text-white');
+                });
+            });
+
+            // Fecha modais ao clicar no fundo escuro
+            document.getElementById('modal-backdrop').addEventListener('click', () => {
+                document.querySelectorAll('div[id^="modal-"]').forEach(modal => {
+                    if(modal.id !== 'modal-backdrop') modal.classList.add('hidden');
+                });
+                document.getElementById('modal-backdrop').classList.add('hidden');
+            });
+
+
+            // --- 2. Lógica do Carrinho de Compras ---
+            let cart = [];
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartTotalElement = document.getElementById('cart-total');
+            const btnCheckout = document.getElementById('btn-checkout');
+            const btnClearCart = document.getElementById('btn-clear-cart');
+            const balanceElement = document.getElementById('user-balance');
+
+            // Formata moeda para padrão BRL
+            const formatCurrency = (value) => {
+                return `R$ ${value.toFixed(2).replace('.', ',')}`;
+            };
+
+            // Atualiza a interface do carrinho
+            const updateCartUI = () => {
+                cartItemsContainer.innerHTML = '';
+                let total = 0;
+
+                if (cart.length === 0) {
+                    cartItemsContainer.innerHTML = '<p class="text-slate-400 text-sm text-center mt-10">O carrinho está vazio.</p>';
+                    btnCheckout.disabled = true;
+                    btnClearCart.disabled = true;
+                } else {
+                    cart.forEach((item, index) => {
+                        total += item.price * item.quantity;
+                        
+                        const itemDiv = document.createElement('div');
+                        itemDiv.className = 'flex justify-between items-center mb-3 pb-3 border-b border-slate-100 last:border-0';
+                        itemDiv.innerHTML = `
+                            <div class="flex-1">
+                                <p class="text-sm font-semibold text-slate-800">${item.name}</p>
+                                <p class="text-xs text-slate-500">${item.quantity}x ${formatCurrency(item.price)}</p>
+                            </div>
+                            <div class="font-semibold text-emerald-600 text-sm">
+                                ${formatCurrency(item.price * item.quantity)}
+                            </div>
+                        `;
+                        cartItemsContainer.appendChild(itemDiv);
+                    });
+                    btnCheckout.disabled = false;
+                    btnClearCart.disabled = false;
+                }
+                
+                cartTotalElement.innerText = formatCurrency(total);
+                return total;
+            };
+
+            // Adiciona produto ao carrinho
+            document.querySelectorAll('.btn-add').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const price = parseFloat(e.currentTarget.getAttribute('data-price'));
+                    const name = e.currentTarget.getAttribute('data-name');
+                    
+                    const existingItemIndex = cart.findIndex(item => item.name === name);
+                    
+                    if (existingItemIndex > -1) {
+                        cart[existingItemIndex].quantity += 1;
+                    } else {
+                        cart.push({ name, price, quantity: 1 });
+                    }
+                    
+                    updateCartUI();
+                });
+            });
+
+            // Lógica do botão Limpar Carrinho
+            btnClearCart.addEventListener('click', () => {
+                cart = [];
+                updateCartUI();
+            });
+
+            // Finaliza a compra
+            btnCheckout.addEventListener('click', () => {
+                const total = updateCartUI();
+                let currentBalance = parseFloat(balanceElement.getAttribute('data-balance'));
+
+                if (currentBalance >= total) {
+                    currentBalance -= total;
+                    
+                    // Atualiza Saldo no DOM
+                    balanceElement.setAttribute('data-balance', currentBalance.toFixed(2));
+                    balanceElement.innerText = `Saldo: ${formatCurrency(currentBalance)}`;
+                    
+                    // Limpa Carrinho
+                    cart = [];
+                    updateCartUI();
+                    
+                    alert('Compra finalizada com sucesso! O valor foi descontado do seu saldo.');
+                } else {
+                    alert(`Saldo insuficiente! Faltam ${formatCurrency(total - currentBalance)} para concluir a compra.`);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
