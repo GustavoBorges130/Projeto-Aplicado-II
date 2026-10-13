@@ -12,6 +12,9 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Garante que as tabelas existam antes de qualquer chamada à API
+app.use('/api', (req, res, next) => db.inicializar().then(() => next()).catch(next));
+
 app.get('/api/status', async (req, res) => {
   try {
     await db.query('SELECT 1');

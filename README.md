@@ -59,9 +59,8 @@ Assim qualquer pessoa acessa pelo link, sem depender de um computador ligado.
 
 1. **Importar o projeto:** em [vercel.com/new](https://vercel.com/new), entre com o GitHub, escolha o repositório **Projeto-Aplicado-II** e clique em **Deploy** (não precisa mudar nenhuma configuração).
 2. **Criar o banco:** no projeto criado, abra a aba **Storage → Create Database → Neon (Serverless Postgres)**, escolha a região **São Paulo (sa-east-1)** e conecte ao projeto. O Vercel cria sozinho a variável `DATABASE_URL`.
-3. **Criar as tabelas:** no painel do Neon (botão **Open in Neon** na aba Storage), abra o **SQL Editor**, cole todo o conteúdo do `script_banco.sql` e clique em **Run**.
-   *(Alternativa: copie a `DATABASE_URL` para o seu `.env` e rode `npm run db:criar`.)*
-4. **Atualizar o deploy:** na aba **Deployments**, clique nos três pontos do último deploy → **Redeploy**.
+3. **Tabelas:** são criadas **automaticamente** no primeiro acesso, quando o banco está vazio (o sistema executa o `script_banco.sql` sozinho). Não é preciso abrir o painel da Neon.
+4. **Atualizar o deploy:** se o banco foi criado depois do primeiro deploy, vá em **Deployments** → três pontos do último deploy → **Redeploy**.
 5. Abra o link do projeto (`https://<nome-do-projeto>.vercel.app`). Para testar se o banco conectou: `https://<nome-do-projeto>.vercel.app/api/status` deve mostrar `{"banco":"conectado"}`.
 
 A cada `git push` na branch `main`, o Vercel publica a nova versão automaticamente.

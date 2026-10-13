@@ -49,4 +49,33 @@ async function transacao(fn) {
   }
 }
 
-module.exports = { pool, query: (sql, params) => pool.query(sql, params), transacao, configuracao };
+// Cria as tabelas automaticamente na primeira execução, quando o banco ainda está vazio
+// (ex.: banco recém-criado no Vercel/Neon). Se as tabelas já existem, não faz nada.
+let inicializacao = null;
+function inicializar() {
+  if (!inicializacao) {
+    inicializacao = (async () => {
+      const client = await pool.connect();
+      try {
+        await client.query('SELECT pg_advisory_lock(424242)');   // evita duas instâncias criando ao mesmo tempo
+        const r = await client.query(`SELECT to_regclass('public.usuario') IS NOT NULL AS existe`);
+        if (!r.rows[0].existe) {
+          const fs = require('fs');
+          const path = require('path');
+          const script = fs.readFileSync(path.join(__dirname, '..', 'script_banco.sql'), 'utf8');
+          await client.query(script);
+          console.log('Banco vazio: tabelas e dados iniciais criados automaticamente.');
+        }
+      } finally {
+        await client.query('SELECT pg_advisory_unlock(424242)').catch(() => {});
+        client.release();
+      }
+    })().catch((err) => {
+      inicializacao = null;   // tenta de novo na próxima requisição
+      throw err;
+    });
+  }
+  return inicializacao;
+}
+
+module.exports = { pool, query: (sql, params) => pool.query(sql, params), transacao, configuracao, inicializar };
