@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cantina da Honestidade</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 font-sans min-h-screen relative">
+
+    <!-- Header -->
+    <header class="bg-emerald-600 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap gap-3 justify-between items-center">
+            <h1 class="text-2xl font-bold tracking-tight">Canjicatech</h1>
+            <div class="flex flex-wrap items-center gap-3">
+                <!-- Funcionário que está operando o sistema (responsável pelas alterações) -->
+                <label class="flex items-center gap-2 text-sm text-emerald-50">
+                    <span class="hidden sm:inline">Operando como:</span>
+                    <select id="sel-funcionario" class="bg-emerald-700 border border-emerald-500 text-white text-sm rounded-lg px-2 py-1.5 focus:outline-none" title="Funcionário responsável"></select>
+                </label>
+                <!-- Cliente que está comprando -->
+                <select id="sel-cliente" class="bg-white text-slate-700 text-sm rounded-lg px-2 py-1.5 focus:outline-none max-w-[200px]" title="Cliente"></select>
+                <!-- Badge de Saldo com Botão de Adicionar -->
+                <div class="flex items-center bg-emerald-800 rounded-full shadow-inner p-1 pl-3">
+                    <span id="user-balance" class="text-sm text-white font-medium mr-2">Saldo: R$ 0,00</span>
+                    <button type="button" id="btn-add-saldo" class="bg-emerald-500 hover:bg-emerald-400 text-white w-7 h-7 rounded-full flex items-center justify-center transition-colors shadow-sm" title="Adicionar Saldo">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </button>
+                </div>
+                <!-- Avatar do Usuário -->
+                <div id="avatar" class="w-10 h-10 bg-white text-emerald-600 rounded-full flex items-center justify-center font-bold shadow-sm">--</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Aviso de conexão com o banco -->
+    <div id="aviso-banco" class="hidden bg-red-600 text-white text-sm text-center py-2 px-4"></div>
+
+    <!-- Navegação -->
+    <nav class="bg-white shadow-sm mb-8">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap gap-3">
+            <button type="button" data-target="pdv" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 text-white font-medium transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+                Catálogo
+            </button>
+            <button type="button" data-target="usuarios" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg bg-transparent text-slate-500 hover:bg-slate-100 font-medium transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                Usuários
+            </button>
+            <button type="button" data-target="produtos" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg bg-transparent text-slate-500 hover:bg-slate-100 font-medium transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Gestão de Produtos
+            </button>
+            <button type="button" data-target="funcionarios" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg bg-transparent text-slate-500 hover:bg-slate-100 font-medium transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                Funcionários
+            </button>
+        </div>
+    </nav>
+
+    <!-- Container Principal -->
+    <main class="max-w-7xl mx-auto px-4 pb-12">
+
+        <!-- ABA: PDV (Catálogo + Carrinho) -->
+        <div id="pdv" class="tab-content block">
+            <div class="flex flex-col lg:flex-row gap-6">
+                <div class="flex-1">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-bold text-slate-800">Catálogo de Produtos</h2>
+                        <p class="text-slate-500 text-sm">Selecione os itens para adicionar ao carrinho.</p>
+                    </div>
+                    <div id="catalogo" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4"></div>
+                </div>
+
+                <!-- Carrinho -->
+                <div class="w-full lg:w-80 flex-shrink-0">
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 h-full flex flex-col overflow-hidden sticky top-4">
+                        <div class="bg-slate-50 p-4 border-b border-slate-200 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            <h2 class="font-bold text-slate-800">Seu Carrinho</h2>
+                        </div>
+                        <div id="cart-items" class="p-4 flex-1 overflow-y-auto bg-white min-h-[200px]"></div>
+                        <div class="p-4 bg-slate-50 border-t border-slate-200">
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="text-slate-600 font-medium">Total:</span>
+                                <span id="cart-total" class="text-xl font-bold text-slate-800">R$ 0,00</span>
+                            </div>
+                            <div class="flex gap-2 mb-4 text-sm">
+                                <label class="flex-1 flex items-center justify-center gap-1 border border-slate-300 rounded-lg py-1.5 cursor-pointer has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50">
+                                    <input type="radio" name="forma-pgto" value="SALDO" checked class="accent-emerald-600"> Saldo
+                                </label>
+                                <label class="flex-1 flex items-center justify-center gap-1 border border-slate-300 rounded-lg py-1.5 cursor-pointer has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50">
+                                    <input type="radio" name="forma-pgto" value="PIX" class="accent-emerald-600"> PIX
+                                </label>
+                            </div>
+                            <div class="space-y-2">
+                                <button id="btn-checkout" disabled class="w-full bg-emerald-600 disabled:bg-slate-300 disabled:cursor-not-allowed hover:bg-emerald-700 text-white font-bold py-3 rounded-lg transition-colors">
+                                    Finalizar Compra
+                                </button>
+                                <button id="btn-clear-cart" disabled class="w-full bg-transparent disabled:text-slate-400 disabled:cursor-not-allowed text-slate-500 hover:text-red-600 hover:bg-red-50 font-medium py-2 rounded-lg transition-colors text-sm">
+                                    Limpar Carrinho
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA: USUÁRIOS (Manter Usuário) -->
+        <div id="usuarios" class="tab-content hidden">
+            <div class="flex flex-wrap gap-3 justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-slate-800">Gerenciar Usuários</h2>
+                <button type="button" id="btn-novo-usuario" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">+ Novo Usuário</button>
+            </div>
+
+            <div class="flex flex-wrap gap-3 mb-4">
+                <input id="busca-usuario" type="search" placeholder="Pesquisar por nome, matrícula ou CPF..." class="flex-1 min-w-[220px] border border-slate-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <select id="filtro-status" class="border border-slate-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <option value="todos">Todos</option>
+                    <option value="ativos">Ativos</option>
+                    <option value="inativos">Inativos</option>
+                </select>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 text-sm uppercase">
+                            <th class="p-4 font-medium">Nome</th>
+                            <th class="p-4 font-medium">Matrícula</th>
+                            <th class="p-4 font-medium">CPF</th>
+                            <th class="p-4 font-medium">Perfil</th>
+                            <th class="p-4 font-medium text-right">Saldo</th>
+                            <th class="p-4 font-medium">Status</th>
+                            <th class="p-4 font-medium text-right">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-usuarios" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                </table>
+            </div>
+            <p id="total-usuarios" class="text-sm text-slate-500 mt-3"></p>
+        </div>
+
+        <!-- ABA: PRODUTOS -->
+        <div id="produtos" class="tab-content hidden">
+            <div class="flex flex-col lg:flex-row gap-6">
+                <div class="flex-1">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-slate-800">Gerenciar Produtos</h2>
+                        <button type="button" id="btn-novo-produto" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">+ Novo Produto</button>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 text-sm uppercase">
+                                    <th class="p-4 font-medium">Produto</th>
+                                    <th class="p-4 font-medium">Categoria</th>
+                                    <th class="p-4 font-medium">Preço (R$)</th>
+                                    <th class="p-4 font-medium">Status</th>
+                                    <th class="p-4 font-medium text-right">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-produtos" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Categorias -->
+                <div class="w-full lg:w-80 flex-shrink-0">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-slate-800">Categorias</h2>
+                        <button type="button" id="btn-nova-categoria" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg font-medium transition-colors text-sm">+ Nova</button>
+                    </div>
+                    <div id="lista-categorias" class="bg-white rounded-xl shadow-sm border border-slate-100 divide-y divide-slate-100"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA: FUNCIONÁRIOS -->
+        <div id="funcionarios" class="tab-content hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-slate-800">Gerenciar Funcionários</h2>
+                <button type="button" id="btn-novo-funcionario" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">+ Novo Funcionário</button>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 text-sm uppercase">
+                            <th class="p-4 font-medium">Nome</th>
+                            <th class="p-4 font-medium">Login</th>
+                            <th class="p-4 font-medium">E-mail</th>
+                            <th class="p-4 font-medium">Cargo</th>
+                            <th class="p-4 font-medium">Status</th>
+                            <th class="p-4 font-medium text-right">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-funcionarios" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Overlay/Fundo Escuro para Modais -->
+    <div id="modal-backdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden z-40 transition-opacity"></div>
+
+    <!-- MODAL: Usuário (incluir / alterar) -->
+    <div id="modal-usuario" class="modal fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-xl z-50 hidden">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="titulo-modal-usuario" class="text-lg font-bold text-slate-800">Cadastrar Novo Usuário</h3>
+                <button type="button" data-fechar class="text-slate-400 hover:text-slate-700 text-2xl leading-none">&times;</button>
+            </div>
+            <form id="form-usuario" class="space-y-4" novalidate>
+                <input type="hidden" name="id_usuario">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Nome Completo *</label>
+                    <input name="nome" type="text" required maxlength="100" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Ex: João Silva">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Matrícula / ID *</label>
+                        <input name="matricula" type="text" required maxlength="20" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Ex: 2024002">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Perfil *</label>
+                        <select name="perfil" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="ALUNO">Aluno</option>
+                            <option value="COLABORADOR">Colaborador</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">E-mail *</label>
+                    <input name="email" type="email" required maxlength="120" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Ex: joao@estudante.senai.br">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">CPF *</label>
+                    <input name="cpf" type="text" required maxlength="14" inputmode="numeric" class="input-cpf w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-slate-100 disabled:text-slate-500" placeholder="000.000.000-00">
+                    <p id="dica-cpf" class="hidden text-xs text-slate-500 mt-1">O CPF não pode ser alterado.</p>
+                </div>
+                <div>
+                    <label id="label-senha-usuario" class="block text-sm font-medium text-slate-700 mb-1">Senha *</label>
+                    <input name="senha" type="password" minlength="6" autocomplete="new-password" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Mínimo 6 caracteres">
+                </div>
+                <p class="erro-form hidden text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2"></p>
+                <div class="pt-2 flex justify-end gap-3">
+                    <button type="button" data-fechar class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition-colors">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors">Salvar Usuário</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Alterar status do usuário (motivo) -->
+    <div id="modal-status" class="modal fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-md bg-white rounded-xl shadow-xl z-50 hidden">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="titulo-modal-status" class="text-lg font-bold text-slate-800">Desativar Usuário</h3>
+                <button type="button" data-fechar class="text-slate-400 hover:text-slate-700 text-2xl leading-none">&times;</button>
+            </div>
+            <form id="form-status" class="space-y-4" novalidate>
+                <input type="hidden" name="id_usuario">
+                <input type="hidden" name="ativo">
+                <p id="texto-modal-status" class="text-sm text-slate-600"></p>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Motivo *</label>
+                    <textarea name="motivo" rows="3" maxlength="200" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Ex: Aluno concluiu o curso"></textarea>
+                </div>
+                <p class="erro-form hidden text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2"></p>
+                <div class="pt-2 flex justify-end gap-3">
+                    <button type="button" data-fechar class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition-colors">Cancelar</button>
+                    <button type="submit" id="btn-confirmar-status" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors">Confirmar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Histórico de status -->
+    <div id="modal-historico" class="modal fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-lg max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-xl z-50 hidden">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="titulo-modal-historico" class="text-lg font-bold text-slate-800">Histórico de Status</h3>
+                <button type="button" data-fechar class="text-slate-400 hover:text-slate-700 text-2xl leading-none">&times;</button>
+            </div>
+            <div id="lista-historico" class="space-y-3"></div>
+        </div>
+    </div>
+
+    <!-- MODAL: Adicionar crédito -->
+    <div id="modal-credito" class="modal fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-md bg-white rounded-xl shadow-xl z-50 hidden">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-lg font-bold text-slate-800">Adicionar Créditos</h3>
+                <button type="button" data-fechar class="text-slate-400 hover:text-slate-700 text-2xl leading-none">&times;</button>
+            </div>
+            <form id="form-credito" class="space-y-4" novalidate>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Usuário *</label>
+                    <select name="id_usuario" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"></select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Valor (R$) *</label>
+                        <input name="valor" type="number" step="0.01" min="0.01" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="0,00">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Pagamento *</label>
+                        <select name="forma_pagamento" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="DINHEIRO">Dinheiro</option>
+                            <option value="PIX">PIX</option>
+                            <option value="CARTAO">Cartão</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Observação</label>
+                    <input name="observacao" type="text" maxlength="200" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <p class="erro-form hidden text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2"></p>
+                <div class="pt-2 flex justify-end gap-3">
+                    <button type="button" data-fechar class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition-colors">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors">Adicionar Crédito</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Extrato -->
+    <div id="modal-extrato" class="modal fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-2xl max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-xl z-50 hidden">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-2">
+                <h3 id="titulo-modal-extrato" class="text-lg font-bold text-slate-800">Extrato</h3>
+                <button type="button" data-fechar class="text-slate-400 hover:text-slate-700 text-2xl leading-none">&times;</button>
+            </div>
+            <p id="saldo-extrato" class="text-sm text-slate-500 mb-4"></p>
+            <div class="flex flex-wrap items-end gap-3 mb-4 text-sm">
+                <label class="text-slate-600">De<br><input id="extrato-de" type="date" class="border border-slate-300 rounded-lg px-2 py-1.5"></label>
+                <label class="text-slate-600">Até<br><input id="extrato-ate" type="date" class="border border-slate-300 rounded-lg px-2 py-1.5"></label>
+                <button type="button" id="btn-filtrar-extrato" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg font-medium">Filtrar</button>
+            </div>
+            <div id="lista-extrato" class="divide-y divide-slate-100 border border-slate-100 rounded-lg"></div>
+        </div>
+    </div>
+
+    <!-- MODAL: Produto -->
+    <div id="modal-produto" class="modal fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-md bg-white rounded-xl shadow-xl z-50 hidden">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="titulo-modal-produto" class="text-lg font-bold text-slate-800">Cadastrar Novo Produto</h3>
+                <button type="button" data-fechar class="text-slate-400 hover:text-slate-700 text-2xl leading-none">&times;</button>
+            </div>
+            <form id="form-produto" class="space-y-4" novalidate>
+                <input type="hidden" name="id_produto">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Nome do Produto *</label>
+                    <input name="nome" type="text" required maxlength="80" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Ex: Refrigerante Lata">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Categoria *</label>
+                    <select name="id_categoria" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"></select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Preço de venda (R$) *</label>
+                        <input name="preco_venda" type="number" step="0.01" min="0.01" required class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="0.00">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Imagem</label>
+                        <input name="imagem" type="text" maxlength="255" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="🥤 ou URL">
+                    </div>
+                </div>
+                <p class="erro-form hidden text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2"></p>
+                <div class="pt-2 flex justify-end gap-3">
+                    <button type="button" data-fechar class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition-colors">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors">Salvar Produto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Categoria -->
+    <div id="modal-categoria" class="modal fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-sm bg-white rounded-xl shadow-xl z-50 hidden">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="titulo-modal-categoria" class="text-lg font-bold text-slate-800">Nova Categoria</h3>
+                <button type="button" data-fechar class="text-slate-400 hover:text-slate-700 text-2xl leading-none">&times;</button>
+            </div>
+            <form id="form-categoria" class="space-y-4" novalidate>
+                <input type="hidden" name="id_categoria">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Nome *</label>
+                    <input name="nome" type="text" required maxlength="50" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Ex: Bebidas">
+                </div>
+                <p class="erro-form hidden text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2"></p>
+                <div class="pt-2 flex justify-end gap-3">
+                    <button type="button" data-fechar class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition-colors">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Funcionário -->
+    <div id="modal-funcionario" class="modal fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-xl z-50 hidden">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="titulo-modal-funcionario" class="text-lg font-bold text-slate-800">Cadastrar Funcionário</h3>
+                <button type="button" data-fechar class="text-slate-400 hover:text-slate-700 text-2xl leading-none">&times;</button>
+            </div>
+            <form id="form-funcionario" class="space-y-4" novalidate>
+                <input type="hidden" name="id_funcionario">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Nome Completo *</label>
+                    <input name="nome" type="text" required maxlength="100" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">CPF *</label>
+                        <input name="cpf" type="text" required maxlength="14" inputmode="numeric" class="input-cpf w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-slate-100 disabled:text-slate-500" placeholder="000.000.000-00">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Cargo *</label>
+                        <select name="cargo" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="OPERADOR">Operador</option>
+                            <option value="GERENTE">Gerente</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">E-mail *</label>
+                    <input name="email" type="email" required maxlength="120" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Login *</label>
+                        <input name="login" type="text" required maxlength="40" autocomplete="off" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                    <div>
+                        <label id="label-senha-funcionario" class="block text-sm font-medium text-slate-700 mb-1">Senha *</label>
+                        <input name="senha" type="password" minlength="6" autocomplete="new-password" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                </div>
+                <p class="erro-form hidden text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2"></p>
+                <div class="pt-2 flex justify-end gap-3">
+                    <button type="button" data-fechar class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition-colors">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notificações -->
+    <div id="toasts" class="fixed bottom-4 right-4 z-[60] space-y-2 w-[calc(100%-2rem)] max-w-sm"></div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
