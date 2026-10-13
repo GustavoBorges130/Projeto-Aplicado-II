@@ -31,7 +31,12 @@ app.use('/api/vendas', vendas);
 app.use('/api', (req, res) => res.status(404).json({ erro: 'Rota não encontrada.' }));
 app.use(tratarErro);
 
-const PORT = Number(process.env.PORT || 3000);
-app.listen(PORT, () => {
-  console.log(`Canjicatech rodando em http://localhost:${PORT}`);
-});
+// No Vercel o app é exportado e executado como função; localmente sobe na porta 3000
+if (require.main === module && !process.env.VERCEL) {
+  const PORT = Number(process.env.PORT || 3000);
+  app.listen(PORT, () => {
+    console.log(`Canjicatech rodando em http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;

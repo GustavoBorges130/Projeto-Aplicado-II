@@ -17,14 +17,15 @@ A interface web (HTML + Tailwind) é integrada a um banco **PostgreSQL** por mei
 
 O seletor **"Operando como"** no topo define o funcionário responsável pelas operações (gravado no histórico e nos créditos). Somente o **gerente** pode desativar usuários e manter funcionários.
 
-## Como executar
+## Como executar localmente
 
 ### 1. Pré-requisitos
 - [Node.js](https://nodejs.org) 18 ou superior
 - [PostgreSQL](https://www.postgresql.org/download/) 16 ou superior
 
 ### 2. Configurar a conexão
-Copie o arquivo `.env.example` para `.env` e ajuste usuário e senha do seu PostgreSQL:
+Copie o arquivo `.env.example` para `.env` e ajuste usuário e senha do seu PostgreSQL
+(ou preencha `DATABASE_URL` para usar o banco da nuvem):
 
 ```
 PGHOST=localhost
@@ -51,6 +52,21 @@ Acesse **http://localhost:3000**.
 ### Dados iniciais
 - Funcionários: **Gerente da Cantina** (login `admin`, senha `admin123`) e **Operador da Cantina** (login `operador`, senha `123456`)
 - 4 usuários (Marcos começa com R$ 25,00 de saldo), 4 categorias e 10 produtos
+
+## Publicar online (Vercel + Neon)
+
+Assim qualquer pessoa acessa pelo link, sem depender de um computador ligado.
+
+1. **Importar o projeto:** em [vercel.com/new](https://vercel.com/new), entre com o GitHub, escolha o repositório **Projeto-Aplicado-II** e clique em **Deploy** (não precisa mudar nenhuma configuração).
+2. **Criar o banco:** no projeto criado, abra a aba **Storage → Create Database → Neon (Serverless Postgres)**, escolha a região **São Paulo (sa-east-1)** e conecte ao projeto. O Vercel cria sozinho a variável `DATABASE_URL`.
+3. **Criar as tabelas:** no painel do Neon (botão **Open in Neon** na aba Storage), abra o **SQL Editor**, cole todo o conteúdo do `script_banco.sql` e clique em **Run**.
+   *(Alternativa: copie a `DATABASE_URL` para o seu `.env` e rode `npm run db:criar`.)*
+4. **Atualizar o deploy:** na aba **Deployments**, clique nos três pontos do último deploy → **Redeploy**.
+5. Abra o link do projeto (`https://<nome-do-projeto>.vercel.app`). Para testar se o banco conectou: `https://<nome-do-projeto>.vercel.app/api/status` deve mostrar `{"banco":"conectado"}`.
+
+A cada `git push` na branch `main`, o Vercel publica a nova versão automaticamente.
+
+> **Atenção:** o sistema ainda não tem tela de login (prevista no RF06 para a próxima etapa), então qualquer pessoa com o link pode cadastrar e alterar dados. Compartilhe o link apenas com o grupo e a professora.
 
 ## Estrutura
 
