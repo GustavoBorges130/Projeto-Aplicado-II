@@ -5,13 +5,181 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cantina da Honestidade</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* ==========================================================================
+           ACESSIBILIDADE - BAIXA VISÃO (ABNT NBR 17225 / WCAG 2.1)
+           ========================================================================== */
+        
+        /* 1. Modo Texto Grande (escala proporcional em toda a plataforma) */
+        html.texto-grande {
+            font-size: 122%;
+        }
+
+        /* 2. Modo Alto Contraste (Preto, Branco, Amarelo e Verde Neon) */
+        html.alto-contraste body,
+        html.alto-contraste main {
+            background-color: #000000 !important;
+            color: #ffffff !important;
+        }
+
+        html.alto-contraste header,
+        html.alto-contraste nav,
+        html.alto-contraste .bg-white,
+        html.alto-contraste .bg-slate-50,
+        html.alto-contraste .bg-slate-50\/60,
+        html.alto-contraste .bg-slate-100,
+        html.alto-contraste .modal {
+            background-color: #000000 !important;
+            color: #ffffff !important;
+            border-color: #ffffff !important;
+        }
+
+        html.alto-contraste header,
+        html.alto-contraste nav {
+            border-bottom: 2px solid #00ff66 !important;
+        }
+
+        html.alto-contraste .shadow-sm,
+        html.alto-contraste .shadow-md,
+        html.alto-contraste .shadow-xl,
+        html.alto-contraste #catalogo > div,
+        html.alto-contraste .modal {
+            border: 2px solid #ffffff !important;
+            box-shadow: none !important;
+        }
+
+        html.alto-contraste h1,
+        html.alto-contraste h2,
+        html.alto-contraste h3,
+        html.alto-contraste th,
+        html.alto-contraste td,
+        html.alto-contraste label,
+        html.alto-contraste p,
+        html.alto-contraste span,
+        html.alto-contraste button {
+            color: #ffffff !important;
+        }
+
+        /* Destaque em Verde Neon para preços, saldos e contadores ativos */
+        html.alto-contraste .text-emerald-600,
+        html.alto-contraste .text-emerald-700,
+        html.alto-contraste #cart-total,
+        html.alto-contraste #user-balance {
+            color: #00ff66 !important;
+        }
+
+        /* Campos de formulário e selects */
+        html.alto-contraste input,
+        html.alto-contraste select,
+        html.alto-contraste textarea,
+        html.alto-contraste option {
+            background-color: #000000 !important;
+            color: #ffffff !important;
+            border: 2px solid #ffffff !important;
+        }
+
+        html.alto-contraste input:disabled {
+            background-color: #1a1a1a !important;
+            color: #a3a3a3 !important;
+            border: 2px dashed #737373 !important;
+        }
+
+        html.alto-contraste input:focus,
+        html.alto-contraste select:focus,
+        html.alto-contraste textarea:focus {
+            outline: 3px solid #00ff66 !important;
+            border-color: #00ff66 !important;
+        }
+
+        /* Botões principais ativos (Verde Neon com texto Preto) */
+        html.alto-contraste .bg-emerald-600:not(:disabled),
+        html.alto-contraste .bg-emerald-500:not(:disabled),
+        html.alto-contraste .bg-emerald-50:not(:disabled) {
+            background-color: #00ff66 !important;
+            color: #000000 !important;
+            border: 2px solid #ffffff !important;
+            font-weight: 800 !important;
+        }
+
+        html.alto-contraste .bg-emerald-600:not(:disabled) *,
+        html.alto-contraste .bg-emerald-500:not(:disabled) *,
+        html.alto-contraste .bg-emerald-50:not(:disabled) * {
+            color: #000000 !important;
+            stroke: #000000 !important;
+        }
+
+        /* Bolinha branca do switch de Ativar/Desativar usuário */
+        html.alto-contraste button[data-acao="status"] > span {
+            background-color: #000000 !important;
+            border: 2px solid #ffffff !important;
+        }
+
+        /* Botões desabilitados (ex: Finalizar Compra / Limpar Carrinho vazio) */
+        html.alto-contraste button:disabled {
+            background-color: #171717 !important;
+            color: #737373 !important;
+            border: 2px dashed #525252 !important;
+            opacity: 1 !important;
+        }
+
+        /* Alertas de erro nos modais (.erro-form) e contador estourado */
+        html.alto-contraste .erro-form,
+        html.alto-contraste .bg-red-50 {
+            background-color: #000000 !important;
+            color: #fde047 !important;
+            border: 2px solid #ff3333 !important;
+            font-weight: 700 !important;
+        }
+
+        html.alto-contraste .contador-nome.text-red-600 {
+            color: #fde047 !important;
+            text-decoration: underline;
+        }
+
+        /* Badges e botões de erro/inativo */
+        html.alto-contraste .bg-red-600,
+        html.alto-contraste .bg-red-500,
+        html.alto-contraste .bg-red-100 {
+            background-color: #ff3333 !important;
+            color: #000000 !important;
+            border: 2px solid #ffffff !important;
+            font-weight: 800 !important;
+        }
+
+        html.alto-contraste .bg-green-100 {
+            background-color: #00ff66 !important;
+            color: #000000 !important;
+            border: 1px solid #ffffff !important;
+            font-weight: 800 !important;
+        }
+
+        html.alto-contraste tr,
+        html.alto-contraste thead tr,
+        html.alto-contraste .divide-y > * {
+            border-color: #ffffff !important;
+        }
+    </style>
 </head>
 <body class="bg-slate-100 font-sans min-h-screen relative">
 
     <!-- Header -->
     <header class="bg-emerald-600 text-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap gap-3 justify-between items-center">
-            <h1 class="text-2xl font-bold tracking-tight">Canjicatech</h1>
+            <!-- Logo + Botões de Acessibilidade ao lado -->
+            <div class="flex items-center gap-3">
+                <h1 class="text-2xl font-bold tracking-tight">Canjicatech</h1>
+                <div class="flex items-center gap-2 bg-emerald-800/90 px-2.5 py-1 rounded-full border border-emerald-400/50 shadow-inner" role="group" aria-label="Acessibilidade para Baixa Visão">
+                    <!-- Botão 1: A grande (Aumentar Texto) -->
+                    <button type="button" id="btn-a11y-fonte" aria-pressed="false" class="w-8 h-8 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-base flex items-center justify-center transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-white" title="Aumentar tamanho do texto (Baixa Visão)" aria-label="Alternar Texto Grande">
+                        A+
+                    </button>
+                    <!-- Botão 2: Bolinha Preto e Verde (Alto Contraste) -->
+                    <button type="button" id="btn-a11y-contraste" aria-pressed="false" class="w-8 h-8 rounded-full bg-emerald-600 hover:bg-emerald-500 flex items-center justify-center transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-white" title="Alternar Alto Contraste (Baixa Visão)" aria-label="Alternar Alto Contraste">
+                        <span class="w-5 h-5 rounded-full border-2 border-white inline-block" style="background: linear-gradient(90deg, #000000 50%, #00ff66 50%);"></span>
+                    </button>
+                </div>
+            </div>
+
             <div class="flex flex-wrap items-center gap-3">
                 <!-- Funcionário que está operando o sistema (responsável pelas alterações) -->
                 <label class="flex items-center gap-2 text-sm text-emerald-50">
@@ -229,7 +397,11 @@
                 <input type="hidden" name="id_usuario">
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Nome Completo *</label>
-                    <input name="nome" type="text" required maxlength="100" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Ex: João Silva">
+                    <input name="nome" type="text" required class="input-nome-pessoa w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Ex: João Silva">
+                    <div class="flex justify-between text-xs text-slate-500 mt-1">
+                        <span>Limite padronizado: máx. 70 caracteres</span>
+                        <span class="contador-nome">0/70</span>
+                    </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
@@ -257,7 +429,7 @@
                     <label id="label-senha-usuario" class="block text-sm font-medium text-slate-700 mb-1">Senha *</label>
                     <input name="senha" type="password" minlength="6" autocomplete="new-password" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Mínimo 6 caracteres">
                 </div>
-                <p class="erro-form hidden text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2"></p>
+                <p class="erro-form hidden text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2 font-medium"></p>
                 <div class="pt-2 flex justify-end gap-3">
                     <button type="button" data-fechar class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition-colors">Cancelar</button>
                     <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors">Salvar Usuário</button>
@@ -426,7 +598,11 @@
                 <input type="hidden" name="id_funcionario">
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Nome Completo *</label>
-                    <input name="nome" type="text" required maxlength="100" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <input name="nome" type="text" required class="input-nome-pessoa w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Ex: Maria Oliveira">
+                    <div class="flex justify-between text-xs text-slate-500 mt-1">
+                        <span>Limite padronizado: máx. 70 caracteres</span>
+                        <span class="contador-nome">0/70</span>
+                    </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
@@ -455,7 +631,7 @@
                         <input name="senha" type="password" minlength="6" autocomplete="new-password" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                     </div>
                 </div>
-                <p class="erro-form hidden text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2"></p>
+                <p class="erro-form hidden text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2 font-medium"></p>
                 <div class="pt-2 flex justify-end gap-3">
                     <button type="button" data-fechar class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition-colors">Cancelar</button>
                     <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors">Salvar</button>
