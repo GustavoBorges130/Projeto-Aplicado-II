@@ -11,6 +11,9 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 const iniciais = (nome) => String(nome || '').split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]).join('').toUpperCase() || '--';
 const ehUrl = (s) => /^(https?:)?\/\//.test(String(s || '')) || String(s || '').startsWith('/');
 
+// Limite padronizado na literatura (Padrão Receita Federal / eSocial / FEBRABAN para Nome Civil)
+const LIMITE_CARACTERES_NOME = 70;
+
 const estado = {
   funcionarios: [],
   usuarios: [],          // lista da aba Usuários (com filtro)
@@ -46,6 +49,84 @@ function toast(msg, tipo = 'ok') {
   setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 3500);
 }
 
+function localStorageGet(k) { try { return localStorage.getItem(`canjicatech.${k}`); } catch { return null; } }
+function localStorageSet(k, v) { try { localStorage.setItem(`canjicatech.${k}`, v); } catch { /* sem armazenamento */ } }
+
+// ------------------- Acessibilidade (Baixa Visão) -------------------
+function aplicarAcessibilidade() {
+  const textoGrande = localStorageGet('textoGrande') === 'true';
+  const altoContraste = localStorageGet('altoContraste') === 'true';
+
+  document.documentElement.classList.toggle('texto-grande', textoGrande);
+  document.documentElement.classList.toggle('alto-contraste', altoContraste);
+
+  const btnFonte = $('#btn-a11y-fonte');
+  const btnContraste = $('#btn-a11y-contraste');
+
+  if (btnFonte) {
+    btnFonte.setAttribute('aria-pressed', String(textoGrande));
+    btnFonte.classList.toggle('ring-2', textoGrande);
+    btnFonte.classList.toggle('ring-white', textoGrande);
+  }
+  if (btnContraste) {
+    btnContraste.setAttribute('aria-pressed', String(altoContraste));
+    btnContraste.classList.toggle('ring-2', altoContraste);
+    btnContraste.classList.toggle('ring-white', altoContraste);
+  }
+}
+
+$('#btn-a11y-fonte')?.addEventListener('click', () => {
+  const novo = localStorageGet('textoGrande') !== 'true';
+  localStorageSet('textoGrande', String(novo));
+  aplicarAcessibilidade();
+  toast(novo ? 'Acessibilidade: Texto Grande ativado.' : 'Acessibilidade: Texto Grande desativado.');
+});
+
+$('#btn-a11y-contraste')?.addEventListener('click', () => {
+  const novo = localStorageGet('altoContraste') !== 'true';
+  localStorageSet('altoContraste', String(novo));
+  aplicarAcessibilidade();
+  toast(novo ? 'Acessibilidade: Alto Contraste ativado.' : 'Acessibilidade: Alto Contraste desativado.');
+});
+
+aplicarAcessibilidade();
+
+// ------------ Validação de Limite de Caracteres para Pessoas ------------
+function atualizarContadorNome(input) {
+  const cont = input.parentElement?.querySelector('.contador-nome');
+  if (!cont) return;
+  const atual = input.value.length;
+  cont.textContent = `${atual}/${LIMITE_CARACTERES_NOME}`;
+  if (atual > LIMITE_CARACTERES_NOME) {
+    cont.className = 'contador-nome text-red-600 font-bold';
+    input.classList.add('border-red-500');
+  } else {
+    cont.className = 'contador-nome text-slate-500';
+    input.classList.remove('border-red-500');
+  }
+}
+
+document.addEventListener('input', (e) => {
+  if (e.target.classList.contains('input-nome-pessoa')) {
+    atualizarContadorNome(e.target);
+  }
+});
+
+function validarNomePessoa(dados) {
+  const bruto = String(dados.nome ?? '');
+  const limpo = bruto.trim();
+  if (!limpo) {
+    throw new Error('O campo Nome Completo é obrigatório.');
+  }
+  if (bruto.length > LIMITE_CARACTERES_NOME || limpo.length > LIMITE_CARACTERES_NOME) {
+    const tamanho = Math.max(bruto.length, limpo.length);
+    const msg = `Limite máximo de ${LIMITE_CARACTERES_NOME} caracteres excedido para o Nome Completo (informado: ${tamanho} caracteres).`;
+    toast(msg, 'erro');
+    throw new Error(msg);
+  }
+  dados.nome = limpo;
+}
+
 // ------------------------------ Modais ------------------------------
 function abrirModal(id) {
   $$('.modal').forEach((m) => m.classList.add('hidden'));
@@ -54,6 +135,7 @@ function abrirModal(id) {
   m.classList.remove('hidden');
   const erro = $('.erro-form', m);
   if (erro) erro.classList.add('hidden');
+  $$('.input-nome-pessoa', m).forEach(atualizarContadorNome);
   setTimeout(() => $('input:not([type=hidden]):not(:disabled), textarea, select', m)?.focus(), 50);
 }
 function fecharModais() {
@@ -137,9 +219,6 @@ function atualizarCabecalho() {
   $('#avatar').title = u?.nome || '';
   atualizarCarrinho();
 }
-
-function localStorageGet(k) { try { return localStorage.getItem(`canjicatech.${k}`); } catch { return null; } }
-function localStorageSet(k, v) { try { localStorage.setItem(`canjicatech.${k}`, v); } catch { /* sem armazenamento */ } }
 
 // ============================= CATÁLOGO / CARRINHO =============================
 function imagemProduto(p, tamanho = 'text-3xl') {
@@ -326,6 +405,7 @@ $('#form-usuario').addEventListener('submit', (e) => {
   const f = e.target;
   enviar(f, async () => {
     const d = dadosForm(f);
+    validarNomePessoa(d);
     if (d.id_usuario) {
       await api(`/usuarios/${d.id_usuario}`, { method: 'PUT', body: d });
       toast('Usuário alterado com sucesso.');
@@ -658,6 +738,7 @@ $('#form-funcionario').addEventListener('submit', (e) => {
   const f = e.target;
   enviar(f, async () => {
     const d = dadosForm(f);
+    validarNomePessoa(d);
     if (d.id_funcionario) await api(`/funcionarios/${d.id_funcionario}`, { method: 'PUT', body: d });
     else await api('/funcionarios', { method: 'POST', body: d });
     toast(d.id_funcionario ? 'Funcionário alterado.' : 'Funcionário cadastrado.');
