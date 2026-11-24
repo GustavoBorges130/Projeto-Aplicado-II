@@ -17,6 +17,36 @@ A interface web (HTML + Tailwind) é integrada a um banco **PostgreSQL** por mei
 
 O seletor **"Operando como"** no topo define o funcionário responsável pelas operações (gravado no histórico e nos créditos). Somente o **gerente** pode desativar usuários e manter funcionários.
 
+## Validações e máscaras
+
+As validações são feitas **na tela** (para orientar o usuário) e **repetidas no servidor e no banco** (para não poderem ser burladas pelo navegador).
+
+| Campo / regra | Como é validado |
+|---|---|
+| **Campos obrigatórios** | Marcados com `*`; o servidor recusa o cadastro se faltar nome, matrícula, e-mail, CPF, senha ou perfil |
+| **Nome** | Obrigatório, máximo de **70 caracteres**, com contador `0/70` que fica vermelho ao passar do limite |
+| **CPF** | **Máscara** `000.000.000-00` ao digitar; validação dos **dígitos verificadores** (regra da Receita Federal); sequências repetidas (`111.111.111-11`) são recusadas; **único** no banco e **não pode ser alterado** depois do cadastro (RN07) |
+| **E-mail** | Formato `nome@dominio.com`; único no banco |
+| **Matrícula / login** | Únicos no banco (mensagem "Já existe um cadastro com…") |
+| **Senha** | Mínimo de 6 caracteres; gravada só como **hash bcrypt** (RNF07) |
+| **Perfil / cargo** | Apenas valores permitidos (Aluno/Colaborador, Gerente/Operador), também travados no banco (`CHECK`) |
+| **Valores em dinheiro** | Exibidos como **R$ 0,00**; preço e crédito precisam ser maiores que zero; o saldo nunca fica negativo (`CHECK saldo >= 0`, RN02) |
+| **Tipos de dados** | Números convertidos e conferidos no servidor (quantidade inteira e positiva, valores com 2 casas decimais); datas e horas gravadas pelo banco |
+| **Regras de negócio** | Usuário inativo não compra nem recebe crédito (RN01); só o gerente desativa usuários (RN04); desativação exige motivo e gera histórico (RN05); quem tem movimentações não pode ser excluído, só desativado (RN06) |
+
+> **CPF para teste:** `123.456.789-09` ou `529.982.247-25` (fictícios, mas válidos). Cada CPF só pode ser usado uma vez.
+
+## Interface e acessibilidade
+
+- Layout responsivo (computador e celular) com Tailwind CSS, abas por assunto e mensagens de sucesso/erro na tela.
+- Botões de **acessibilidade para baixa visão** no topo: **texto grande** e **alto contraste** (a escolha fica salva no navegador).
+
+## Modelo de dados (MER)
+
+![MER do Canjicatech](docs/MER_Canjicatech.png)
+
+O diagrama reflete exatamente as tabelas criadas pelo `script_banco.sql` (8 tabelas, 8 relacionamentos). A documentação completa está em [`docs/`](docs/).
+
 ## Como executar localmente
 
 ### 1. Pré-requisitos
@@ -81,7 +111,7 @@ A cada `git push` na branch `main`, o Vercel publica a nova versão automaticame
 ├── public/
 │   ├── index.html            # Interface
 │   └── js/app.js             # Lógica da tela (chamadas à API)
-└── docs/                     # Documentação do sistema
+└── docs/                     # Documentação do sistema e imagem do MER
 ```
 
 ## API (resumo)
